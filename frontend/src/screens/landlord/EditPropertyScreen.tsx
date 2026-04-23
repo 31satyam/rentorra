@@ -147,11 +147,20 @@ const EditPropertyScreen: React.FC = () => {
         await propertyService.uploadPropertyImages(propertyId, imageFormData);
       }
 
-      Alert.alert('Success', 'Property updated successfully', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      if (Platform.OS === 'web') {
+        window.alert('Property updated successfully');
+        navigation.navigate('Dashboard');
+      } else {
+        Alert.alert('Success', 'Property updated successfully', [
+          { text: 'OK', onPress: () => navigation.navigate('Dashboard') },
+        ]);
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to update property');
+      if (Platform.OS === 'web') {
+        window.alert('Failed to update property');
+      } else {
+        Alert.alert('Error', 'Failed to update property');
+      }
     } finally {
       setSubmitting(false);
     }

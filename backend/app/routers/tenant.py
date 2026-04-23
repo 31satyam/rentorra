@@ -19,6 +19,17 @@ def create_inquiry(
     property = db.query(Property).filter(Property.id == inquiry_data.property_id).first()
     if not property:
         raise HTTPException(status_code=404, detail="Property not found")
+        
+    existing_inquiry = db.query(Inquiry).filter(
+        Inquiry.property_id == inquiry_data.property_id,
+        Inquiry.tenant_id == current_user.id
+    ).first()
+
+    if existing_inquiry:
+        existing_inquiry.message += f"\n\nNew Message: {inquiry_data.message}"
+        db.commit()
+        db.refresh(existing_inquiry)
+        return existing_inquiry
     
     new_inquiry = Inquiry(
         **inquiry_data.model_dump(),

@@ -43,7 +43,11 @@ def reply_to_inquiry(
     if not inquiry:
         raise HTTPException(status_code=404, detail="Inquiry not found")
 
-    inquiry.reply = data.reply
+    if inquiry.reply:
+        inquiry.reply += f"\n\nNew Reply: {data.reply}"
+    else:
+        inquiry.reply = data.reply
+        
     db.commit()
 
     return {"message": "Reply sent successfully"}

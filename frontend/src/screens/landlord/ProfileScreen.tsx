@@ -8,12 +8,15 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 type RootStackParamList = {
   Login: undefined;
   Home: undefined;
+  Dashboard: undefined;
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -22,14 +25,36 @@ const LandlordProfileScreen: React.FC = () => {
   const { user, logout } = useAuth();
   const navigation = useNavigation<NavigationProp>();
 
-  const handleLogout = async () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      await logout();
+  const performLogout = async () => {
+    await logout();
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+  };
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
+  const handleLogout = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm("Are you sure you want to logout?")) {
+        performLogout();
+      }
+    } else {
+      Alert.alert(
+        "Logout",
+        "Are you sure you want to logout?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Logout", style: "destructive", onPress: performLogout }
+        ]
+      );
+    }
+  };
+
+  const showComingSoonAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
     }
   };
 
@@ -37,27 +62,27 @@ const LandlordProfileScreen: React.FC = () => {
     {
       icon: 'person-outline',
       title: 'Personal Information',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Personal Information is under development.'),
     },
     {
       icon: 'business-outline',
       title: 'My Properties',
-      onPress: () => {},
+      onPress: () => navigation.navigate('Dashboard'),
     },
     {
       icon: 'stats-chart-outline',
       title: 'Analytics',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Analytics feature is under development.'),
     },
     {
       icon: 'settings-outline',
       title: 'Settings',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Settings feature is under development.'),
     },
     {
       icon: 'help-circle-outline',
       title: 'Help & Support',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Help & Support is under development.'),
     },
     {
       icon: 'log-out-outline',

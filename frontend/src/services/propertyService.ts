@@ -79,6 +79,12 @@ class PropertyService {
       const response = await api.post(
         `/properties/${propertyId}/images`,
         formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          transformRequest: (data) => data,
+        }
       );
       return response.data;
     } catch (error) {

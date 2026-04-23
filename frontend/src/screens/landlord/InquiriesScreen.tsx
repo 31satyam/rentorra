@@ -79,15 +79,22 @@ const LandlordInquiriesScreen: React.FC = () => {
       
       <Text style={styles.message}>{item.message}</Text>
       
-      <TouchableOpacity
-        style={styles.replyButton}
-        onPress={() => {
-          setSelectedInquiryId(item.id);
-          setModalVisible(true);
-        }}
-      >
-        <Text style={styles.replyButtonText}>Reply to Inquiry</Text>
-      </TouchableOpacity>
+      {item.reply ? (
+        <View style={styles.replyBox}>
+          <Text style={styles.replyLabel}>Your Reply:</Text>
+          <Text style={styles.replyText}>{item.reply}</Text>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles.replyButton}
+          onPress={() => {
+            setSelectedInquiryId(item.id);
+            setModalVisible(true);
+          }}
+        >
+          <Text style={styles.replyButtonText}>Reply to Inquiry</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -231,6 +238,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+  },
+  replyBox: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#e6f9ed',
+    borderRadius: 8,
+  },
+  replyLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#34C759',
+  },
+  replyText: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 3,
   },
   emptyContainer: {
     alignItems: 'center',

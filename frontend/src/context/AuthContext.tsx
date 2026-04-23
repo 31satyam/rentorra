@@ -1,5 +1,5 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 // Types
 type User = {
@@ -42,7 +42,7 @@ const STORAGE_KEYS = {
 } as const;
 
 // API Base URL - CHANGE THIS TO YOUR IP
-const API_URL = 'http://localhost:8001';
+const API_URL = 'http://192.168.2.41:8001';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

@@ -7,7 +7,9 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  Alert,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -23,37 +25,59 @@ const ProfileScreen: React.FC = () => {
 
   const navigation = useNavigation<NavigationProp>();
   
-    const handleLogout = async () => {
-      if (window.confirm("Are you sure you want to logout?")) {
-        await logout();
-  
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Login' }],
-        });
+    const performLogout = async () => {
+      await logout();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    };
+
+    const handleLogout = () => {
+      if (Platform.OS === 'web') {
+        if (window.confirm("Are you sure you want to logout?")) {
+          performLogout();
+        }
+      } else {
+        Alert.alert(
+          "Logout",
+          "Are you sure you want to logout?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Logout", style: "destructive", onPress: performLogout }
+          ]
+        );
       }
     };
+
+  const showComingSoonAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
 
   const menuItems = [
     {
       icon: 'person-outline',
       title: 'Personal Information',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Personal Information is under development.'),
     },
     {
       icon: 'call-outline',
       title: 'Contact Details',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Contact Details feature is under development.'),
     },
     {
       icon: 'settings-outline',
       title: 'Settings',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Settings feature is under development.'),
     },
     {
       icon: 'help-circle-outline',
       title: 'Help & Support',
-      onPress: () => {},
+      onPress: () => showComingSoonAlert('Coming Soon', 'Help & Support is under development.'),
     },
     {
       icon: 'log-out-outline',

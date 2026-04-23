@@ -1,10 +1,10 @@
 import PropertyCard from '@components/PropertyCard';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import propertyService from '@services/propertyService';
 import { Property } from '../../types/index';
 import { LandlordStackParamList } from '../../types/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -15,6 +15,7 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -29,9 +30,11 @@ const DashboardScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadProperties();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadProperties();
+    }, [])
+  );
 
   const loadProperties = async () => {
     try {
@@ -51,27 +54,43 @@ const DashboardScreen: React.FC = () => {
     loadProperties();
   };
 
+  const executeDelete = async (propertyId: number) => {
+    try {
+      await propertyService.deleteProperty(propertyId);
+      loadProperties();
+      if (Platform.OS === 'web') {
+        window.alert('Property deleted successfully');
+      } else {
+        Alert.alert('Success', 'Property deleted successfully');
+      }
+    } catch (error) {
+      if (Platform.OS === 'web') {
+        window.alert('Failed to delete property');
+      } else {
+        Alert.alert('Error', 'Failed to delete property');
+      }
+    }
+  };
+
   const handleDeleteProperty = (propertyId: number) => {
-    Alert.alert(
-      'Delete Property',
-      'Are you sure you want to delete this property? This action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await propertyService.deleteProperty(propertyId);
-              loadProperties();
-              Alert.alert('Success', 'Property deleted successfully');
-            } catch (error) {
-              Alert.alert('Error', 'Failed to delete property');
-            }
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
+        executeDelete(propertyId);
+      }
+    } else {
+      Alert.alert(
+        'Delete Property',
+        'Are you sure you want to delete this property? This action cannot be undone.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: () => executeDelete(propertyId),
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const renderProperty = ({ item }: { item: Property }) => (

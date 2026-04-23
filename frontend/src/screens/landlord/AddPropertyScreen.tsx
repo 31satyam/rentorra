@@ -111,11 +111,20 @@ const AddPropertyScreen: React.FC = () => {
         await propertyService.uploadPropertyImages(property.id, imageFormData);
       }
 
-      Alert.alert('Success', 'Property added successfully', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      if (Platform.OS === 'web') {
+        window.alert('Property added successfully');
+        navigation.navigate('Dashboard');
+      } else {
+        Alert.alert('Success', 'Property added successfully', [
+          { text: 'OK', onPress: () => navigation.navigate('Dashboard') },
+        ]);
+      }
     } catch (error) {
-      Alert.alert('Error', 'Failed to add property');
+      if (Platform.OS === 'web') {
+        window.alert('Failed to add property');
+      } else {
+        Alert.alert('Error', 'Failed to add property');
+      }
     } finally {
       setLoading(false);
     }

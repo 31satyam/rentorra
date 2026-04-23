@@ -158,6 +158,13 @@ def delete_property(
     if not property:
         raise HTTPException(status_code=404, detail="Property not found")
     
+    from app.models import Inquiry, Wishlist
+    
+    # Delete dependent records first to avoid foreign key constraint failures
+    db.query(PropertyImage).filter(PropertyImage.property_id == property_id).delete()
+    db.query(Inquiry).filter(Inquiry.property_id == property_id).delete()
+    db.query(Wishlist).filter(Wishlist.property_id == property_id).delete()
+    
     db.delete(property)
     db.commit()
     
